@@ -1,0 +1,202 @@
+<script type="text/javascript">
+	document.addEventListener("deviceready", init, false);
+    window.addEventListener('load', init, false);
+	
+	var db;
+	 
+	function init() {
+        db = window.openDatabase("Shopping", "2.0", "ShoppingDB", 2*1024*1024);
+		db.transaction(function (tx) {            
+			tx.executeSql('CREATE TABLE IF NOT EXISTS User (UserId INTEGER PRIMARY KEY AUTOINCREMENT, Email text, Password text, Name text)');
+			tx.executeSql('CREATE TABLE IF NOT EXISTS Category (CategoryId INTEGER PRIMARY KEY AUTOINCREMENT, Name text, Desc text)');
+			tx.executeSql('CREATE TABLE IF NOT EXISTS Product (ProductId INTEGER PRIMARY KEY AUTOINCREMENT, Name text, Image text, Price DECIMAL(10, 5), AvailableQty INTEGER, CategoryId INTEGER, FOREIGN KEY(CategoryId) REFERENCES Category(CategoryId))');
+			tx.executeSql('CREATE TABLE IF NOT EXISTS Cart (CartId INTEGER PRIMARY KEY AUTOINCREMENT,UserId INTEGER, ProductId INTEGER, Qty INTEGER, SubTotal DECIMAL(10, 5), Total DECIMAL(10, 5), FOREIGN KEY(UserId) REFERENCES User(UserId), FOREIGN KEY(ProductId) REFERENCES Product(ProductId))');
+		}, errorCB, successCB);
+		
+		//Insert Initial Values To Run The Application
+		const statements = [
+		'INSERT OR REPLACE INTO User(UserId,Email,Password,Name) VALUES (1,"stevemiller@canada.ca", "steve@123", "Steve Miller");',
+		
+		'INSERT OR REPLACE INTO Category(CategoryId,Name,Desc) VALUES (1,"Electronics", "Electronic Items")',
+		'INSERT OR REPLACE INTO Category(CategoryId,Name,Desc) VALUES (2,"Clothings", "Apparal and Clothing Items")',
+		
+		'INSERT OR REPLACE INTO Product(ProductId,Name,Image,Price,AvailableQty,CategoryId) VALUES(1,"iPhone 12","Images/iPhone12.png",560,100,1)',
+		'INSERT OR REPLACE INTO Product(ProductId,Name,Image,Price,AvailableQty,CategoryId) VALUES(2,"Samsung S3","Images/SamsungS3.png",360,130,1)',
+		
+		'INSERT OR REPLACE INTO Product(ProductId,Name,Image,Price,AvailableQty,CategoryId) VALUES(3,"T-Shirt","Images/Tshirt.png",560,100,2)',
+		'INSERT OR REPLACE INTO Product(ProductId,Name,Image,Price,AvailableQty,CategoryId) VALUES(4,"Jeans","Images/Jeans.png",560,100,2)',
+		
+		'INSERT OR REPLACE INTO Cart(CartId,UserId,ProductId,Qty,SubTotal,Total) VALUES(1,1,1,1,560,560)',
+		'INSERT OR REPLACE INTO Cart(CartId,UserId,ProductId,Qty,SubTotal,Total) VALUES(1,1,2,1,360,360)'];
+		
+		db.transaction(function (tx) {  
+			for (const stmt of statements) {
+				tx.executeSql(stmt);
+			}
+		}, errorCB, successCB);
+		
+		//Login
+		login('stevemiller@canada.ca','steve@123');
+		
+		//Register
+		register('riteshtandon23@gmail.com','tandon','Ritesh Tandon');
+		
+		//My Profile
+		getMyProfile(2);
+		
+		//Update profile
+		setMyProfile('vedanshtandon20@gmail.com','Vedansh Tandon');
+		
+		//Get Products By Category
+		getProductsByCategory(1);
+		
+		//Get User Cart
+		getCart(1);
+		
+		//Search Items
+		searchItem('Samsung')
+	}
+
+	function errorCB(err) {
+		console.log(err);
+		alert("Error processing SQL: "+err.code);
+	}
+
+	function successCB() {
+		//alert("Database Ready!");
+	}
+	
+	
+	function login(username,pwd){
+		var sql = 'select UserId from User where Email=? and Password=?';
+		var userId;
+		db.transaction(function (tx) {
+			userId=tx.executeSql(sql,[username,pwd],
+			function(err,results) {
+				if((results.rows.length)>0){
+					if(results.rows[0].UserId){
+						alert("Logged In Successfully!");
+					}else{
+						alert("Invalid Login or Password!");
+					}
+				}else{
+					alert("Invalid Login or Password!");
+				}
+			});
+		}, errorCB, successCB);
+	}
+	
+	function register(username,pwd,name){
+		var sql='INSERT OR REPLACE INTO User(UserId,Email,Password,Name) VALUES (?,?,?,?)';
+		var userId;
+		db.transaction(function (tx) {
+			userId=tx.executeSql(sql,[2,username,pwd,name],
+			function(err,results) {
+				//console.log(results);
+				if((results.rowsAffected)>0){
+					userId=results.insertId;
+					alert("Registered Successfully!");
+				}else{
+					alert("Oops Some Error Has Occurred!");
+				}
+			});
+		}, errorCB, successCB);
+	}
+	
+	function getMyProfile(userId){
+		var sql = 'select UserId,Email,Name from User where UserId=?';
+		db.transaction(function (tx) {
+			userId=tx.executeSql(sql,[userId],
+			function(err,results) {
+				if((results.rows.length)>0){
+					//console.log(results);
+					if(results.rows[0].UserId){
+						alert("Profile loaded Successfully!");
+					}else{
+						alert("Profile not loaded");
+					}
+				}else{
+					alert("Invalid Profile!");
+				}
+			});
+		}, errorCB, successCB);
+	}
+	
+	function setMyProfile(Email,Name){
+		var userId=2;
+		var sql = 'update User set Email=?,Name=? where UserId=?';
+		
+		db.transaction(function (tx) {
+			userId=tx.executeSql(sql,[Email,Name,userId],
+			function(err,results) {
+			//console.log(results);
+				if((results.rowsAffected)>0){
+					alert("Profile updated Successfully!");
+				}else{
+					alert("Oops there was a problem!");
+				}
+			});
+		}, errorCB, successCB);
+	}
+	
+	function getProductsByCategory(categoryId){
+		var json=new Array();
+		var sql = 'select ProductId,Name,Image,Price,AvailableQty,CategoryId from Product where CategoryId=?';
+		db.transaction(function (tx) {
+			userId=tx.executeSql(sql,[categoryId],
+			function(err,results) {
+				if((results.rows.length)>0){
+					//console.log(results);
+					for(i=0;i<results.rows.length;i++){
+						var p=results.rows[i];
+						json.push({"ProductId":p.ProductId,"Name":p.Name,"Image":p.Image,"Price":p.Price,"AvailableQty":p.AvailableQty,"CategoryId":p.CategoryId});
+					}
+				}else{
+					alert("No Products are available in this category");
+				}
+				//console.log(json);
+			});
+		}, errorCB, successCB);
+	}
+	
+	function getCart(userId){
+		var json=new Array();
+		var sql = 'select CartId,UserId,ProductId,Qty,SubTotal,Total from Cart where UserId=?';
+		db.transaction(function (tx) {
+			userId=tx.executeSql(sql,[userId],
+			function(err,results) {
+				if((results.rows.length)>0){
+					//console.log(results);
+					for(i=0;i<results.rows.length;i++){
+						var p=results.rows[i];
+						json.push({"UserId":p.UserId,"ProductId":p.ProductId,"Qty":p.Qty,"SubTotal":p.SubTotal,"Total":p.Total});
+					}
+				}else{
+					alert("No Products are available in this category");
+				}
+				//console.log(json);
+			});
+		}, errorCB, successCB);
+	}
+	
+	function searchItem(searchText){
+		var json=new Array();
+		var sql = "select ProductId,Name,Image,Price,AvailableQty,CategoryId from Product where Name like '%' || ? || '%'";
+		db.transaction(function (tx) {
+			userId=tx.executeSql(sql,[searchText],
+			function(err,results) {
+				if((results.rows.length)>0){
+					console.log(results);
+					for(i=0;i<results.rows.length;i++){
+						var p=results.rows[i];
+						json.push({"ProductId":p.ProductId,"Name":p.Name,"Image":p.Image,"Price":p.Price,"AvailableQty":p.AvailableQty,"CategoryId":p.CategoryId});
+					}
+				}else{
+					alert("No Products are available in this category");
+				}
+				//console.log(json);
+			});
+		}, errorCB, successCB);
+	}
+	
+</script>
