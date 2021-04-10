@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>My Shop</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1  maximum-scale=1 user-scalable=no">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-touch-fullscreen" content="yes">
+	<meta name="HandheldFriendly" content="True">
+	
+	<link href="https://fonts.googleapis.com/css?family=Lato:400,700,900" rel="stylesheet"> 
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,600i,700,700i" rel="stylesheet">
+
+	<link rel="stylesheet" href="css/materialize.css">
+	<link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/style.css">
+	
+	<link rel="shortcut icon" href="img/favicon.png">
+
+</head>
+<body>
+
+	<!-- navbar top -->
+	<div class="navbar-top">
+		<div class="side-nav-panel-left">
+			<a href="#" data-activates="slide-out-left" class="side-nav-left"><i class="fa fa-bars"></i></a>
+		</div>
+		<!-- site brand	 -->
+		<div class="site-brand">
+			<a href="index.html" class="das"><h1><span>My</span>Shop</h1></a>
+		</div>
+		<!-- end site brand	 -->
+		
+	</div>
+	<!-- end navbar top -->
+
+	<!-- side nav left-->
+	<div class="side-nav-panel-left">
+		<ul id="slide-out-left" class="side-nav side-nav-panel">
+			<li><a href="index.html"><h1><span>My</span>Shop</h1></a></li>
+			<li><a href="login.html"><i class="fa fa-sign-in"></i>Login</a></li>
+			<li><a href="register.html"><i class="fa fa-user-plus"></i>Register</a></li>
+		</ul>
+	</div>
+	<!-- end side nav left-->
+
+	
+	<!-- slider -->
+	<div class="slider">
+		
+		<ul class="slides">
+			<li>
+				<img src="images/basket.jpg" alt="">
+				<div class="caption slider-content  center-align">
+					<h2>Basketball</h2>
+					<h4>Get Your Basketball</h4>
+					<a href="dashboard.html" class="btn button-default">SHOP NOW</a>
+				</div>
+			</li>
+			<li>
+				<img src="images/Tshirt.png" alt="">
+				<div class="caption slider-content  center-align">
+					<h2>T-SHIRT</h2>
+					<h4>Get Your T-SHIRT</h4>
+					<a href="dashboard.html" class="btn button-default">SHOP NOW</a>
+				</div>
+			</li>
+			<li>
+				<img src="images/boxinggloves.jpg" alt="">
+				<div class="caption slider-content center-align">
+					<h2>Boxing Gloves</h2>
+					<h4>Get Your boxing gloves</h4>
+					<a href="dashboard.html" class="btn button-default">SHOP NOW</a>
+				</div>
+			</li>
+		</ul>
+
+	</div>
+	<!-- end slider -->
+
+	
+
+	<!-- footer -->
+	<div class="footer">
+		<div class="container">
+			<div class="about-us-foot">
+				<h6><span>My</span>Shop</h6>
+				<p>is a lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+			</div>
+			<div class="social-media">
+				<a href=""><i class="fa fa-facebook"></i></a>				 
+				<a href=""><i class="fa fa-instagram"></i></a>
+			</div>
+	 
+			<div class="copyright">
+				<span>© 2021 All Right Reserved</span>
+			</div>
+		</div>
+	</div>
+	<!-- end footer -->
+	
+	<!-- scripts -->
+	<script src="js/jquery-3.1.0.min.js"></script>
+	<script src="js/materialize.min.js"></script>
+	<script src="js/main.js"></script>
+	<script type="text/javascript">
+		var userId=localStorage.getItem("userid");
+		if(userId==undefined){
+		
+		}else{
+			window.location.href="dashboard.html";
+		}	
+	</script>
+
+</body>
+</html>
